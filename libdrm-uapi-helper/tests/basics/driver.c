@@ -1,73 +1,53 @@
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+#include <drm-uapi/drm.h>
+#include <drm-uapi/i915_drm.h>
+#include <drm-uapi/i915_drm_prelim.h>
 
-#include <drm-uapi-helper.h>
+#include <i915-shared-headers/iaf_netlink.h>
+#include <i915-shared-headers/intel_hwconfig_types.h>
+
+#include <errno.h>
+#include <sys/ioctl.h>
 
 #undef NDEBUG
 #include <assert.h>
 
-#ifdef _WIN32
-#define tmpfile mytmpfile
-static FILE *mytmpfile ();
-#endif
-
-int main ()
+int main (void)
 {
-  char b[256];
-
-  /* Basics.
+  /* The i915 uAPI on top of the core DRM uAPI.
    */
   {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "World") > 0);
-    rewind (o);
-    assert (fread (b, 1, sizeof (b), o) == 14 &&
-            strncmp (b, "Hello, World!\n", 14) == 0);
-    fclose (o);
+    assert (DRM_IOCTL_BASE == 'd');
+    assert (_IOC_TYPE (DRM_IOCTL_I915_GETPARAM) == DRM_IOCTL_BASE);
+    assert (_IOC_NR (DRM_IOCTL_I915_GETPARAM) ==
+            DRM_COMMAND_BASE + DRM_I915_GETPARAM);
+    assert (_IOC_SIZE (DRM_IOCTL_I915_GETPARAM) ==
+            sizeof (drm_i915_getparam_t));
+    assert (sizeof (struct drm_i915_query_item) == 24);
   }
 
-  /* Empty name.
+  /* The i915 PRELIM uAPI extensions.
    */
   {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "") < 0 && errno == EINVAL);
-    fclose (o);
+    assert (PRELIM_I915_PARAM_HAS_VM_BIND == ((1 << 16) | 6));
+    assert (_IOC_NR (PRELIM_DRM_IOCTL_I915_GEM_VM_BIND) ==
+            DRM_COMMAND_BASE + PRELIM_DRM_I915_GEM_VM_BIND);
+  }
+
+  /* The shared i915 headers.
+   */
+  {
+    assert (INTEL_HWCONFIG_MAX_SLICES_SUPPORTED == 1);
+    assert (IAF_CMD_OP_DEVICE_ENUM == 1);
+  }
+
+  /* Issue an i915 request on an invalid file descriptor.
+   */
+  {
+    int v = 0;
+    drm_i915_getparam_t gp = {.param = I915_PARAM_CHIPSET_ID, .value = &v};
+
+    assert (ioctl (-1, DRM_IOCTL_I915_GETPARAM, &gp) == -1 && errno == EBADF);
   }
 
   return 0;
 }
-
-#ifdef _WIN32
-#include <windows.h>
-#include <fcntl.h>
-#include <io.h>
-
-FILE *mytmpfile ()
-{
-  char d[MAX_PATH + 1], p[MAX_PATH + 1];
-  if (GetTempPathA (sizeof (d), d) == 0 ||
-      GetTempFileNameA (d, "tmp", 0, p) == 0)
-    return NULL;
-
-  HANDLE h = CreateFileA (p,
-                          GENERIC_READ | GENERIC_WRITE,
-                          0,
-                          NULL,
-                          CREATE_ALWAYS,
-                          FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
-                          NULL);
-  if (h == INVALID_HANDLE_VALUE)
-    return NULL;
-
-  int fd = _open_osfhandle ((intptr_t) h, _O_RDWR);
-  if (fd == -1)
-    return NULL;
-
-  FILE *f = _fdopen (fd, "wb+");
-  if (f == NULL)
-    _close (fd);
-
-  return f;
-}
-#endif
