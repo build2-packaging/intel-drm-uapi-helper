@@ -1,7 +1,11 @@
-# libdrm-uapi-helper - Drm Uapi Helper for intel-dgpu releases
+# libdrm-uapi-helper - Linux DRM uAPI C headers with the Intel PRELIM i915 extensions
 
-This is a `build2` package for the [`<UPSTREAM-NAME>`](https://<UPSTREAM-URL>)
-C library. It provides <SUMMARY-OF-FUNCTIONALITY>.
+This is a `build2` package for the
+[`drm-uapi-helper`](https://github.com/intel-gpu/drm-uapi-helper) C library.
+It provides a unified view of the Linux DRM and i915 kernel uAPI available in
+the Intel GPGPU (DGPU) releases, in particular the "PRELIM" uAPI extensions
+in `i915_drm_prelim.h`, as well as other i915 headers that are usually copied
+to user space components.
 
 
 ## Usage
@@ -10,13 +14,13 @@ To start using `libdrm-uapi-helper` in your project, add the following `depends`
 value to your `manifest`, adjusting the version constraint as appropriate:
 
 ```
-depends: libdrm-uapi-helper ^<VERSION>
+depends: libdrm-uapi-helper ^2.0.0-b.27
 ```
 
 Then import the library in your `buildfile`:
 
 ```
-import libs = libdrm-uapi-helper%lib{<TARGET>}
+import libs = libdrm-uapi-helper%lib{drm-uapi-helper}
 ```
 
 
@@ -25,18 +29,22 @@ import libs = libdrm-uapi-helper%lib{<TARGET>}
 This package provides the following importable targets:
 
 ```
-lib{<TARGET>}
+lib{drm-uapi-helper}
 ```
 
-<DESCRIPTION-OF-IMPORTABLE-TARGETS>
+The headers, included with the upstream directory as the prefix
+(`#include <drm-uapi/drm.h>`, `#include <drm-uapi/i915_drm.h>`, which also
+includes `i915_drm_prelim.h`, `#include <i915-shared-headers/iaf_netlink.h>`,
+and so on). The package version maps the upstream release candidates to
+betas (`2.0.0-b.27` is `v2.0-rc27`).
+
+The headers are only supported on Linux, where they include the kernel's
+`<linux/types.h>` and `<asm/ioctl.h>` from the system (the Linux API headers
+package, for example `linux-libc-dev` on Debian). The xe uAPI from the
+separate upstream `xe` branch is not included. As in the kernel, `i810_drm.h`
+and `msm_drm.h` use C++ keywords as member names and are C only.
 
 
 ## Configuration variables
 
-This package provides the following configuration variables:
-
-```
-[bool] config.libdrm_uapi_helper.<VARIABLE> ?= false
-```
-
-<DESCRIPTION-OF-CONFIG-VARIABLES>
+This package provides no configuration variables.
