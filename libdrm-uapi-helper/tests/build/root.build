@@ -1,3 +1,8 @@
+# Suppress warnings coming from the upstream headers of the library under
+# test.
+#
+c.internal.scope = current
+
 using c
 
 h{*}: extension = h
