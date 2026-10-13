@@ -1,0 +1,3 @@
+import libs = libdrm-uapi-helper%lib{drm-uapi-helper}
+
+exe{driver}: {h c}{**} $libs testscript{**}

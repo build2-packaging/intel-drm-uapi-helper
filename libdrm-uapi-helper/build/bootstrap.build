@@ -1,0 +1,7 @@
+project = libdrm-uapi-helper
+
+using version
+using config
+using test
+using install
+using dist
