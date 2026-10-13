@@ -1,4 +1,14 @@
-./: {*/ -build/} doc{README.md PACKAGE-README.md} legal{COPYING} manifest
+./: {*/ -build/ -LICENSES/}                       \
+    doc{README.md PACKAGE-README.md}              \
+    legal{COPYING LICENSES/preferred/GPL-2.0      \
+          LICENSES/preferred/MIT                  \
+          LICENSES/exceptions/Linux-syscall-note} \
+    manifest
+
+# Install the license texts recreating the LICENSES/ subdirectories that
+# COPYING refers to.
+#
+legal{*}: install.subdirs = true
 
 # Don't install tests.
 #
