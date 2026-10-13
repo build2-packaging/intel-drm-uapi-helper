@@ -1,16 +1,17 @@
 : 1
 name: libdrm-uapi-helper
-version: 0.1.0-a.0.z
+version: 2.0.0-b.26.z
+upstream-version: 2.0-rc27
 type: lib,binless
 language: c
-project: build2-intel-drm-uapi-helper
-summary: Drm Uapi Helper for intel-dgpu releases
-license: other: proprietary ; Not free/open source.
+project: intel-drm-uapi-helper
+summary: Linux DRM uAPI C headers with the Intel PRELIM i915 extensions
+topics: drm, i915, intel gpu, linux kernel, uapi
+license: GPL-2.0-only WITH Linux-syscall-note, MIT ; Most are MIT, rest GPL-2.0.
 description-file: README.md
 package-description-file: PACKAGE-README.md
-url: https://example.org/upstream
-email: upstream@example.org
-package-url: https://github.com/build2-packaging/build2-intel-drm-uapi-helper
+url: https://github.com/intel-gpu/drm-uapi-helper
+package-url: https://github.com/build2-packaging/intel-drm-uapi-helper
 package-email: packaging@build2.org ; Mailing list.
 depends: * build2 >= 0.18.0
 depends: * bpkg >= 0.18.0
