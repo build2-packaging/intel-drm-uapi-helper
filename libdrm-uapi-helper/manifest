@@ -1,6 +1,6 @@
 : 1
 name: libdrm-uapi-helper
-version: 2.0.0-b.26.z
+version: 2.0.0-b.27
 upstream-version: 2.0-rc27
 type: lib,binless
 language: c
